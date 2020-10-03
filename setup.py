@@ -2,10 +2,10 @@ import setuptools
 
 setuptools.setup(
     name='zmtools',
-    version='1.0.1',
+    version='1.0.2',
     author='Zeke Marffy',
     author_email='zmarffy@yahoo.com',
-    packages=setuptools.find_packages(),
+    packages=["zmtools"],
     url='https://github.com/zmarffy/zmtools',
     license='LICENSE.txt',
     description='Various tools used across Zeke Marffy\'s programs',
