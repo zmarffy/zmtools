@@ -1,0 +1,1 @@
+A conglomeration of reused functions. The docstrings should explain all you need to know. This will grow as my projects multiply.
