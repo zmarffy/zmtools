@@ -1,6 +1,8 @@
 import logging
+from multiprocessing import Process
 import platform
 import sys
+import time
 
 LOGGER = logging.getLogger(__name__)
 
@@ -99,3 +101,46 @@ def truncate(s, length=25, elipsis=True):
         return truncated + "..." if elipsis else truncated
     else:
         return s
+
+
+def run_with_loading(function, args=[], kwargs={}, phrase="Loading...", bar_length=5, completed_success_string="✔", completed_failure_string="✗", evaluate_function=None, raise_exc=True):
+    '''
+    Run a function with a loading animation displayed at the same time. Uses multiprocessing to achieve this.
+    
+    evaluate_function must be either a callable that returns True or False to determine if the function that ran succeeded or not, or None, in which case the function will always be treated as if it succeeded
+    '''
+    p = Process(target=_show_loading_animation, args=(phrase, bar_length))
+    p.daemon = True
+    p.start()
+    try:
+        output = function(*args, **kwargs)
+        if evaluate_function is None or evaluate_function(output):
+            c = completed_success_string
+            succeded = True
+        else:
+            c = completed_failure_string
+            succeded = False
+        raised_exc = False
+    except Exception as e:
+        output = e
+        c = completed_failure_string
+        succeded = False
+        raised_exc = True
+    p.terminate()
+    sys.stdout.write(f"\33[2K\r{phrase} {c}")
+    print()
+    if raised_exc and raise_exc:
+        raise output
+    return output, succeded
+
+
+def _show_loading_animation(phrase, bar_length):
+    '''
+    Show a loading animation. Probably only useful if used in multithreading/multiprocessing
+    '''
+    while True:
+        for i in range(bar_length):
+            sys.stdout.write(
+                f"\r{phrase} {'□' * i}{'■'}{'□' * (bar_length - i - 1)}")
+            time.sleep(0.15)
+            sys.stdout.flush()
