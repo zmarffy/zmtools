@@ -2,7 +2,7 @@ import setuptools
 
 setuptools.setup(
     name='zmtools',
-    version='1.0.3',
+    version='1.1.0',
     author='Zeke Marffy',
     author_email='zmarffy@yahoo.com',
     packages=["zmtools"],
