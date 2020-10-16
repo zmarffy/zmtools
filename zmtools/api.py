@@ -1,8 +1,13 @@
 import logging
-from multiprocessing import Process
+import os
 import platform
+import re
+import subprocess
 import sys
 import time
+from multiprocessing import Process
+
+from packaging import version
 
 LOGGER = logging.getLogger(__name__)
 
@@ -105,8 +110,8 @@ def truncate(s, length=25, elipsis=True):
 
 def run_with_loading(function, args=[], kwargs={}, phrase="Loading...", bar_length=5, completed_success_string="✔", completed_failure_string="✗", evaluate_function=None, raise_exc=True):
     '''
-    Run a function with a loading animation displayed at the same time. Uses multiprocessing to achieve this.
-    
+    Run a function with a loading animation displayed at the same time. Uses multiprocessing to achieve this. Returns a tuple consisting of the function's return value and a boolean.
+
     evaluate_function must be either a callable that returns True or False to determine if the function that ran succeeded or not, or None, in which case the function will always be treated as if it succeeded
     '''
     p = Process(target=_show_loading_animation, args=(phrase, bar_length))
@@ -136,7 +141,7 @@ def run_with_loading(function, args=[], kwargs={}, phrase="Loading...", bar_leng
 
 def _show_loading_animation(phrase, bar_length):
     '''
-    Show a loading animation. Probably only useful if used in multithreading/multiprocessing
+    Show a loading animation until killed. Probably only useful if used in multithreading/multiprocessing.
     '''
     while True:
         for i in range(bar_length):
@@ -144,3 +149,46 @@ def _show_loading_animation(phrase, bar_length):
                 f"\r{phrase} {'□' * i}{'■'}{'□' * (bar_length - i - 1)}")
             time.sleep(0.15)
             sys.stdout.flush()
+
+
+def get_dpkg_package_version(package_name):
+    '''
+    Get the version of an installed package.
+    '''
+    return re.findall(r"(?<=Version: ).+", subprocess.check_output(["dpkg", "-s", package_name]).decode())[0]
+
+
+def check_github_for_newer_versions(app_name, current_version, force_close=True, force_close_args=[], force_close_kwargs={}):
+    '''
+    Check GitHub's releases page to see if there is a newer version. Warn or close the program if there is. Reads /etc/ghinfo/{app_name} to get the GitHub repo info.
+
+    If force_close is True, sys.exit(1) will be used. If force close is a callable, it will be used. You can pass argumentss to this callable with force_close_args and force_close_kwargs.
+    '''
+    if (force_close_args or force_close_kwargs) and (not force_close or force_close is True):
+        raise ValueError(
+            "Cannot specify this combination of force_close, force_close_args, and force_close_kwargs")
+    if current_version == "dev":
+        return False
+    filename = os.path.join(os.sep, "etc", "ghinfo", app_name)
+    with open(filename) as f:
+        repo_owner, repo_name = [l.strip() for l in f.readlines()]
+    out = subprocess.check_output(
+        ["gh", "release", "list", "-R", f"{repo_owner}/{repo_name}"]).decode().strip()
+    versions = [l.split("\t", 1)[0] for l in out.split("\n")]
+    latest_version = versions[0]
+    if version.parse(latest_version) > version.parse(current_version):
+        if force_close:
+            log_function = "critical"
+        else:
+            log_function = "warning"
+        getattr(LOGGER, log_function)(
+            f"You are using version {current_version}, but {latest_version} is available on GitHub")
+        if force_close:
+            LOGGER.critical("Please update to continue using this application")
+            if force_close is True:
+                sys.exit(1)
+            else:
+                force_close(*force_close_args, **force_close_kwargs)
+        else:
+            LOGGER.warning(
+                "Please consider upgrading for the latest features and bugfixes")
