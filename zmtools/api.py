@@ -1,3 +1,5 @@
+# TODO: Good docstrings.
+
 import logging
 import os
 import platform
@@ -143,6 +145,7 @@ def _show_loading_animation(phrase, bar_length):
     '''
     Show a loading animation until killed. Probably only useful if used in multithreading/multiprocessing.
     '''
+    
     while True:
         for i in range(bar_length):
             sys.stdout.write(
@@ -155,6 +158,7 @@ def get_dpkg_package_version(package_name):
     '''
     Get the version of an installed package.
     '''
+
     return re.findall(r"(?<=Version: ).+", subprocess.check_output(["dpkg", "-s", package_name]).decode())[0]
 
 
@@ -164,6 +168,7 @@ def check_github_for_newer_versions(app_name, current_version, force_close=True,
 
     If force_close is True, sys.exit(1) will be used. If force close is a callable, it will be used. You can pass argumentss to this callable with force_close_args and force_close_kwargs.
     '''
+
     if (force_close_args or force_close_kwargs) and (not force_close or force_close is True):
         raise ValueError(
             "Cannot specify this combination of force_close, force_close_args, and force_close_kwargs")
