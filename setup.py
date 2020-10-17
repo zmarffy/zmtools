@@ -2,7 +2,7 @@ from os.path import join as join_path
 import re
 import setuptools
 
-with open(join_path("zmtools", "/__init__.py"), encoding="utf8") as f:
+with open(join_path("zmtools", "__init__.py"), encoding="utf8") as f:
     version = re.search(r'__version__ = "(.*?)"', f.read()).group(1)
 
 setuptools.setup(
