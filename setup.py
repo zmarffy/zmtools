@@ -1,5 +1,6 @@
-from os.path import join as join_path
 import re
+from os.path import join as join_path
+
 import setuptools
 
 with open(join_path("zmtools", "__init__.py"), encoding="utf8") as f:
@@ -10,7 +11,7 @@ setuptools.setup(
     version=version,
     author='Zeke Marffy',
     author_email='zmarffy@yahoo.com',
-    packages=["zmtools"],
+    packages=setuptools.find_packages(),
     url='https://github.com/zmarffy/zmtools',
     license='MIT',
     description='Various tools used across Zeke Marffy\'s programs',
