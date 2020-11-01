@@ -1,5 +1,7 @@
 # TODO: Good docstrings.
 
+import importlib
+import importlib.util
 import logging
 import os
 import platform
@@ -7,6 +9,7 @@ import re
 import subprocess
 import sys
 import time
+from importlib import import_module as im
 from multiprocessing import Process
 
 from packaging import version
@@ -247,3 +250,53 @@ def check_github_for_newer_versions(app_name, current_version, force_close=sys.e
         else:
             LOGGER.warning(
                 "Please consider upgrading for the latest features and bugfixes")
+
+def get_module_from_filename(path_to_file):
+    """Get a module by path
+
+    Args:
+        path_to_file (str): Path to the module
+        name (str): Name of module
+
+    Raises:
+        ModuleNotFoundError: If the module cannot be found
+
+    Returns:
+        module: The module
+    """
+    module_name = path_to_file.split(os.sep)[-1]
+    spec = importlib.util.spec_from_file_location(module_name, path_to_file)
+    try:
+        m = importlib.util.module_from_spec(spec)
+    except AttributeError:
+        raise ModuleNotFoundError("No module at'{}'".format(path_to_file))
+    spec.loader.exec_module(m)
+    return m
+
+def get_module(module_name, path=None):
+    """Get a module by name, and if that doesn't work, get it by specified path
+
+    Args:
+        module_name (str): Name of module
+        path (str, optional): Path to module. Defaults to None.
+
+    Raises:
+        ModuleNotFoundError: If the module cannot be found
+
+    Returns:
+        module: The module
+    """
+    try:
+        return importlib.import_module(module_name)
+    except ModuleNotFoundError as e:
+        if path is not None:
+            msg = "No module named '{}'".format(module_name)
+            if str(e) == msg:
+                try:
+                    return get_module_from_filename(path)
+                except FileNotFoundError:
+                    raise ModuleNotFoundError(msg)
+            else:
+                raise e
+        else:
+            raise e
