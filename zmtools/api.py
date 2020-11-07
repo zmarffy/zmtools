@@ -1,5 +1,3 @@
-# TODO: Good docstrings.
-
 import importlib
 import importlib.util
 import logging
@@ -9,6 +7,7 @@ import re
 import subprocess
 import sys
 import time
+from contextlib import contextmanager
 from importlib import import_module as im
 from multiprocessing import Process
 
@@ -91,7 +90,7 @@ def input_multiline(warn=None, default=""):
         default (str, optional): Default input to use if no input is read. Defaults to "".
 
     Returns:
-        [type]: [description]
+        string: The string inputted
     """
     s = sys.stdin.read()
     s = s.strip()
@@ -125,7 +124,7 @@ def search_list_of_objs(objs, attr, value):
         value (any): The value to be matched
 
     Returns:
-        [type]: [description]
+        list[any]: The list of objects found
     """
     return [obj for obj in objs if getattr(obj, attr) == value]
 
@@ -150,6 +149,29 @@ def truncate(s, length=25, elipsis=True):
         return truncated + "..." if elipsis else truncated
     else:
         return s
+
+
+@contextmanager
+def loading_animation(phrase="Loading...", bar_length=5, completed_success_string="✔", completed_failure_string="✗"):
+    '''
+    Run a function with a laoding animation. This is the context manager implementation.
+    '''
+    p = Process(target=_show_loading_animation, args=(phrase, bar_length))
+    p.daemon = True
+    p.start()
+    exc = None
+    try:
+        yield
+        c = completed_success_string
+    except Exception as e:
+        exc = e
+        c = completed_failure_string
+    finally:
+        p.terminate()
+        sys.stdout.write(f"\33[2K\r{phrase} {c}")
+        print()
+        if exc:
+            raise exc
 
 
 def run_with_loading(function, args=[], kwargs={}, phrase="Loading...", bar_length=5, completed_success_string="✔", completed_failure_string="✗", evaluate_function=None, raise_exc=True):
@@ -274,7 +296,7 @@ def get_module_from_filename(path_to_file):
     return m
 
 def get_module(module_name, path=None):
-    """Get a module by name, and if that doesn't work, get it by specified path
+    """Get a module by name, and if that doesn't work, get it by specified path. Once retreieved, it's probably a good idea to set a global with it
 
     Args:
         module_name (str): Name of module
