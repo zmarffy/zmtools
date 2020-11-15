@@ -160,12 +160,12 @@ def loading_animation(phrase="Loading...", bar_length=5, completed_success_strin
     p.daemon = True
     p.start()
     exc = None
+    c = completed_failure_string
     try:
         yield
         c = completed_success_string
     except Exception as e:
         exc = e
-        c = completed_failure_string
     finally:
         p.terminate()
         sys.stdout.write(f"\33[2K\r{phrase} {c}")
