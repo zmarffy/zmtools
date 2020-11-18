@@ -152,10 +152,14 @@ def truncate(s, length=25, elipsis=True):
 
 
 @contextmanager
+def dummy_context_manager(*args, **kwargs):
+    """Useless context manager"""
+    yield
+
+
+@contextmanager
 def loading_animation(phrase="Loading...", bar_length=5, completed_success_string="✔", completed_failure_string="✗"):
-    '''
-    Run a function with a laoding animation. This is the context manager implementation.
-    '''
+    """Run a function with a laoding animation. This is the context manager implementation"""
     p = Process(target=_show_loading_animation, args=(phrase, bar_length))
     p.daemon = True
     p.start()
