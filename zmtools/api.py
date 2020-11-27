@@ -277,6 +277,7 @@ def check_github_for_newer_versions(app_name, current_version, force_close=sys.e
             LOGGER.warning(
                 "Please consider upgrading for the latest features and bugfixes")
 
+
 def get_module_from_filename(path_to_file):
     """Get a module by path
 
@@ -298,6 +299,7 @@ def get_module_from_filename(path_to_file):
         raise ModuleNotFoundError("No module at'{}'".format(path_to_file))
     spec.loader.exec_module(m)
     return m
+
 
 def get_module(module_name, path=None):
     """Get a module by name, and if that doesn't work, get it by specified path. Once retreieved, it's probably a good idea to set a global with it
@@ -326,3 +328,29 @@ def get_module(module_name, path=None):
                 raise e
         else:
             raise e
+
+
+def picker(items, item_name="choice"):
+    """A picker for a list of items
+
+    Args:
+        items (list[any]): The list to pick from
+        item_name (str, optional): A friendly name of what an item is. Defaults to "choice".
+
+    Raises:
+        ValueError: If the user enters invalid input
+
+    Returns:
+        any: The picked item
+    """
+    if not items:
+        raise ValueError(f"Not a single {item_name} to pick from")
+    elif len(items) == 1:
+        return items[0]
+    for index, item in enumerate(items, start=1):
+        print(f"{index}) {item}")
+    try:
+        choice_index = int(input(f"Select a {item_name}: "))
+    except ValueError:
+        raise ValueError("Invalid input")
+    return items[choice_index - 1]
