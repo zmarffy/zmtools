@@ -25,6 +25,21 @@ else:
     getche = getch.getche
 
 
+@contextmanager
+def working_directory(path):
+    """Context manager to run all code under it in a certain directory
+
+    Args:
+        path (str): The path to switch to for the scope of the context manager
+    """
+    owd = os.getcwd()
+    os.chdir(path)
+    try:
+        yield
+    finally:
+        os.chdir(owd)
+
+
 def init_logging(level=logging.INFO, filename=None, filemode=None):
     """Set a logging.basicConfig's format to '%(asctime)s [%(levelname)s] %(message)s' and set a certain level
 
