@@ -11,7 +11,7 @@ from contextlib import contextmanager
 from importlib import import_module as im
 from multiprocessing import Process
 
-from packaging import version
+import packaging
 
 LOGGER = logging.getLogger(__name__)
 
@@ -275,7 +275,7 @@ def check_github_for_newer_versions(app_name, current_version, force_close=sys.e
     out = subprocess.check_output(
         ["gh", "release", "list", "-R", f"{repo_owner}/{repo_name}"]).decode().strip()
     latest_version = [l.split("\t", 1)[0] for l in out.split("\n")][0]
-    if version.parse(latest_version) > version.parse(current_version):
+    if packaging.version.parse(latest_version) > packaging.version.parse(current_version):
         if force_close:
             log_function = "critical"
         else:
@@ -369,3 +369,20 @@ def picker(items, item_name="choice"):
     except ValueError:
         raise ValueError("Invalid input")
     return items[choice_index - 1]
+
+
+def get_package_version(package_name):
+    """Return the version of a package using the "parse the __init__.py file" method
+
+    Args:
+        package_name (str): The package name
+
+    Returns:
+        str: The version
+    """
+    try:
+        version = re.search(r'__version__ = "(.*?)"',
+                            importlib.resources.read_text(package_name, "__init__.py")).group(1)
+    except AttributeError:
+        version = ""
+    return version
