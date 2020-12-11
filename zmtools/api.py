@@ -1,4 +1,4 @@
-import importlib
+import importlib.resources
 import importlib.util
 import logging
 import os
@@ -371,18 +371,54 @@ def picker(items, item_name="choice"):
     return items[choice_index - 1]
 
 
-def get_package_version(package_name):
+def get_package_version(package_name, use_folder_only=False):
     """Return the version of a package using the "parse the __init__.py file" method
 
     Args:
         package_name (str): The package name
+        use_folder_only (bool): Use only a package in a local folder rather than using importlib.resources
 
     Returns:
         str: The version
     """
     try:
-        version = re.search(r'__version__ = "(.*?)"',
-                            importlib.resources.read_text(package_name, "__init__.py")).group(1)
+        if not use_folder_only:
+            version = re.search(r'__version__ = "(.*?)"', importlib.resources.read_text(
+                package_name.replace("-", "_"), "__init__.py")).group(1)
+        else:
+            with open(os.path.join(package_name.replace("-", "_").replace(".", os.sep), "__init__.py"), "r") as f:
+                version = re.search(r'__version__ = "(.*?)"', f.read()).group(1)
     except AttributeError:
         version = ""
     return version
+
+
+def read_text(file_location, not_exists_ok=False):
+    """Read text from a file
+
+    Args:
+        file_location (str): Location of file
+        not_exists_ok (bool, optional): If True and file does not exist, will return "" instead of throw an exception. Defaults to False.
+
+    Returns:
+        str: The text in the file, stripped of whitepace at the end
+    """
+    try:
+        with open(file_location, "r") as f:
+            return f.read().strip()
+    except FileNotFoundError:
+        if not not_exists_ok:
+            raise
+        else:
+            return ""
+
+
+def write_text(file_location, content):
+    """Write text to a file
+
+    Args:
+        file_location (str): Location of file
+        content (str): The content to write to the file
+    """
+    with open(file_location, "w") as f:
+        f.write(content)
