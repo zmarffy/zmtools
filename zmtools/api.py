@@ -11,7 +11,7 @@ from contextlib import contextmanager
 from importlib import import_module as im
 from multiprocessing import Process
 
-import packaging
+import packaging.version
 
 LOGGER = logging.getLogger(__name__)
 
