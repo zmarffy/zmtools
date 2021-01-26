@@ -1,1 +1,1 @@
-A conglomeration of reused functions. The docstrings should explain all you need to know. This will grow as my projects multiply.
+A conglomeration of functions reused in my program; maybe they can help you too. The docstrings should explain all you need to know. This will grow as my projects multiply.

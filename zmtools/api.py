@@ -24,6 +24,8 @@ else:
     import getch
     getche = getch.getche
 
+# Look, I know there's a lot going on here. It's a cluster. What can I say?
+
 
 @contextmanager
 def working_directory(path):
@@ -41,7 +43,7 @@ def working_directory(path):
 
 
 def init_logging(level=logging.INFO, filename=None, filemode=None):
-    """Set a logging.basicConfig's format to '%(asctime)s [%(levelname)s] %(message)s' and set a certain level
+    """Set a logging.basicConfig's format to '%(asctime)s [%(levelname)s] %(message)s' and set the root logger to a certain level
 
     Args:
         level (int, optional): Logging level. Defaults to logging.INFO.

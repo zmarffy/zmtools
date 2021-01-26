@@ -19,7 +19,7 @@ setuptools.setup(
     long_description=open('README.txt').read(),
     long_description_content_type='text/plain',
     install_requires=[
-        "getch",
+        'getch; platform_system != "Windows"',
         "packaging"
     ],
 )
