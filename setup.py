@@ -20,6 +20,5 @@ setuptools.setup(
     long_description_content_type='text/plain',
     install_requires=[
         'getch; platform_system != "Windows"',
-        "packaging"
     ],
 )
