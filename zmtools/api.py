@@ -13,7 +13,7 @@ IS_WINDOWS = platform.system() == "Windows"
 
 if IS_WINDOWS:
     import msvcrt
-    getche = msvcrt.getche
+    getche = msvcrt.getwche
 else:
     import getch
     getche = getch.getche
@@ -84,7 +84,7 @@ def y_to_continue(prompt: str = "Enter y to continue:", requires_enter: bool = F
     """
     print(prompt + " ", end="", flush=True)
     if not requires_enter:
-        y = str(getche().lower()) == "y"
+        y = getche().lower() == "y"
         print()
     else:
         y = input().lower() == "y"
