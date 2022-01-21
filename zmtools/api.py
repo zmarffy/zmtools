@@ -7,16 +7,11 @@ import sys
 from contextlib import contextmanager
 from typing import Optional
 
+from click import getchar
+
 LOGGER = logging.getLogger(__name__)
 
 IS_WINDOWS = platform.system() == "Windows"
-
-if IS_WINDOWS:
-    import msvcrt
-    getche = msvcrt.getwche
-else:
-    import getch
-    getche = getch.getche
 
 
 @contextmanager
@@ -84,7 +79,7 @@ def y_to_continue(prompt: str = "Enter y to continue:", requires_enter: bool = F
     """
     print(prompt + " ", end="", flush=True)
     if not requires_enter:
-        y = getche().lower() == "y"
+        y = getchar().lower() == "y"
         print()
     else:
         y = input().lower() == "y"

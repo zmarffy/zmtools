@@ -1,0 +1,30 @@
+[tool.poetry]
+name = "zmtools"
+version = "0.0.0"
+description = "Various tools used across Zeke Marffy's programs"
+authors = ["Zeke Marffy <zmarffy@yahoo.com>"]
+readme = "README.md"
+repository = "https://github.com/zmarffy/zmtools"
+homepage = "https://github.com/zmarffy/zmtools"
+license = "MIT"
+
+[tool.poetry.dependencies]
+python = "^3.8"
+click = "^2.0.0"
+
+[tool.poetry.dev-dependencies]
+poethepoet = "^0.11.0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0", "poetry-dynamic-versioning"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poe.tasks]
+clean = "rm -rf .pytest_cache dist ./**/__pycache__"
+
+[tool.poetry-dynamic-versioning]
+enable = true
+metadata = true
+tagged-metadata = true
+dirty = true
+format-jinja = "{% if distance == 0 %}{{ base }}{% else %}{{ base }}+{{ distance }}.{{ commit }}{% endif %}"
