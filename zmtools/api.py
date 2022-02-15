@@ -148,7 +148,7 @@ def dummy_context_manager(*args, **kwargs) -> None:
 
 
 def get_dpkg_package_version(package_name: str) -> str:
-    """Get the version of an installed package.
+    """Get the version of an installed Debian package.
 
     Args:
         package_name (str): The package name
