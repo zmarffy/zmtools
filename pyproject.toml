@@ -3,24 +3,77 @@ name = "zmtools"
 version = "0.0.0"
 description = "Various tools used across Zeke Marffy's programs"
 authors = ["Zeke Marffy <zmarffy@yahoo.com>"]
+packages = [{ include = "zmtools" }]
 readme = "README.md"
 repository = "https://github.com/zmarffy/zmtools"
 homepage = "https://github.com/zmarffy/zmtools"
 license = "MIT"
 
 [tool.poetry.dependencies]
-python = "^3.8"
-click = ">=2.0.0"
+python = "^3.8.1"
 
-[tool.poetry.dev-dependencies]
-poethepoet = "^0.11.0"
+[tool.poetry.group.test.dependencies]
+pytest = "^7.3.1"
+pytest-datafiles = "^3.0.0"
+
+[tool.poetry.group.dev.dependencies]
+black = "^23.3.0"
+isort = "^5.12.0"
+flake8 = "^6.0.0"
+poethepoet = "^0.19.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0", "poetry-dynamic-versioning"]
-build-backend = "poetry.core.masonry.api"
+build-backend = "poetry_dynamic_versioning.backend"
+
+[tool.black]
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.git
+    | \.hg
+    | \.mypy_cache
+    | \.tox
+    | \.venv
+    | _build
+    | buck-out
+    | build
+    | dist
+    | _build_files
+)/
+'''
+
+[tool.isort]
+profile = "black"
+skip = [
+    ".bzr",
+    ".direnv",
+    ".eggs",
+    ".git",
+    ".hg",
+    ".mypy_cache",
+    ".nox",
+    ".pants.d",
+    ".svn",
+    ".tox",
+    ".venv",
+    "__pypackages__",
+    "_build",
+    "buck-out",
+    "build",
+    "dist",
+    "node_modules",
+    "venv",
+    "_build_files",
+]
 
 [tool.poe.tasks]
-clean = "rm -rf .pytest_cache dist build *.egg-info ./**/__pycache__"
+clean = "rm -rf .pytest_cache dist ./**/__pycache__ test-report.xml"
+test = "pytest"
+_black = "black --diff . --check"
+_isort = "isort . -c"
+check-format = ["_black", "_isort"]
+lint = "flake8"
 
 [tool.poetry-dynamic-versioning]
 enable = true

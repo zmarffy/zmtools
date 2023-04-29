@@ -1,0 +1,13 @@
+Package: mypackage
+Status: install ok installed
+Priority: optional
+Section: bogus
+Installed-Size: 0
+Maintainer: Zeke Marffy <fake_email@example.com>
+Architecture: amd64
+Multi-Arch: foreign
+Version: 1.0.0-1ubuntu1.10
+Depends: libc6 (>= 2.34), libcurl4 (= 7.81.0-1ubuntu1.10), zlib1g (>= 1:1.1.4)
+Description: no description
+Homepage: https://github.com/zmarffy
+Original-Maintainer: Zeke Marffy <fake_email@example.com>
