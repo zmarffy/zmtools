@@ -141,7 +141,9 @@ def get_dpkg_package_version(package_name: str) -> str:
     """
     return re.findall(
         r"(?<=Version: ).+",
-        subprocess.check_output(["dpkg", "-s", package_name]).decode(),
+        subprocess.run(
+            ["dpkg", "-s", package_name], check=True, capture_output=True, text=True
+        ).stdout,
     )[0]
 
 
